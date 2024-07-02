@@ -19,7 +19,6 @@ def getDifficulty(problemTitle):
 
     try:
         response = json.loads(requests.get("https://alfa-leetcode-api.onrender.com/select?titleSlug={}".format(problemTitle)).content)
-        # time.sleep(5)
         response = response['difficulty']
         cacheManager.addCache(problemTitle,response)
     except:
@@ -33,10 +32,14 @@ def getProblems(link):
 
     print("Fetching for username:",username)
 
-    response = json.loads(requests.get("https://alfa-leetcode-api.onrender.com/{}/acSubmission".format(username)).content)
+    response = requests.get("https://alfa-leetcode-api.onrender.com/{}/acSubmission".format(username)).content
+    try:
+        response = json.loads(response)
+    except:
+        print("Unable to scrape profile")
+        return {}
 
     submissionList = response['submission']
-
     submissionByDate = {}    
 
     for submission in submissionList:
@@ -51,32 +54,6 @@ def getProblems(link):
 
     return submissionByDate
 
-
-def getProblems_old(link):
-    page = requests.get(link)
-    soup = BeautifulSoup(page.content, 'html.parser')
-
-    f = open("./soup.html","w+")
-    f.write(soup.text)
-    f.close()
-    
-    table = soup.find('div', recursive=True,attrs = {'class':'flex flex-col'})
-    if(table == None):
-        print("Could not find problems table in link")
-        # return
-    print("Table:",table)
-
-    problems = soup.findAll('a',recursive=True)
-    if(problems == None):
-        print("No problems in link")
-        return
-    print("Problems:",problems)
-
-    for row in problems:
-        print(row['href'])
-
-    pass
-
 def print_problems_solved(link):
     problems=getProblems(link)
     for date in problems:
@@ -85,5 +62,5 @@ def print_problems_solved(link):
             print(problem["title"],problem['difficulty'])
         print("\n")
 
-link = "https://leetcode.com/u/SUGANTH_47/"
+link = "https://leetcode.com/u/sreeerode12/"
 print_problems_solved(link)
