@@ -11,9 +11,9 @@ def initIfNot():
         cache[p] = d
     f.close()
 
-    print("Cache:")
-    print(cache)
-    print("\n\n")
+    # print("Cache:")
+    # print(cache)
+    # print("\n\n")
 
 
 def addCache(problem,difficulty):

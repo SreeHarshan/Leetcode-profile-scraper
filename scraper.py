@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from datetime import datetime
 import requests
 import json
@@ -6,9 +5,8 @@ import cache as cacheManager
 import time
 
 def getUsername(link):
-    i = link.find("u/")
-    username = link[i+2:]
-    return username.replace("/","")
+    link = link.replace("https:","").replace("leetcode.com","").replace("u/","")
+    return link.replace("/","")
 
 def getDifficulty(problemTitle):
 
@@ -17,9 +15,17 @@ def getDifficulty(problemTitle):
     if(cacheManager.checkCache(problemTitle)):
         return cacheManager.getCache(problemTitle)
 
+    body = """query questionTitle($titleSlug: String!) {
+  question(titleSlug: $titleSlug) {
+    difficulty
+  }
+}"""
+
+    variables = {"titleSlug":problemTitle}
+
     try:
-        response = json.loads(requests.get("https://alfa-leetcode-api.onrender.com/select?titleSlug={}".format(problemTitle)).content)
-        response = response['difficulty']
+        response = json.loads(requests.get("https://leetcode.com/graphql/",json={"query": body,"variables":variables}).content)
+        response = response['data']['question']['difficulty']
         cacheManager.addCache(problemTitle,response)
     except:
         response = "Null"
@@ -32,14 +38,23 @@ def getProblems(link):
 
     print("Fetching for username:",username)
 
-    response = requests.get("https://alfa-leetcode-api.onrender.com/{}/acSubmission".format(username)).content
+    body = '''query recentAcSubmissions($username: String!, $limit: Int!) {
+  recentAcSubmissionList(username: $username, limit: $limit) {
+    titleSlug
+    timestamp
+  }
+}'''
+    variables = {"username": username,"limit":20}
+
+    response = requests.get("https://leetcode.com/graphql/",json={"query": body,"variables":variables}).content
     try:
         response = json.loads(response)
     except:
         print("Unable to scrape profile")
+        print("Response from server:",response.decode('UTF-8'))
         return {}
 
-    submissionList = response['submission']
+    submissionList = response['data']['recentAcSubmissionList']
     submissionByDate = {}    
 
     for submission in submissionList:
@@ -62,5 +77,10 @@ def print_problems_solved(link):
             print(problem["title"],problem['difficulty'])
         print("\n")
 
-link = "https://leetcode.com/u/sreeerode12/"
-print_problems_solved(link)
+if __name__ == "__main__":
+    getProblems("https://leetcode.com/u/sreeerode12/")
+
+
+# TODO change to leetcode graphql api and check ip block issue
+# Changed from wifi to mobile hotspot and yet detecting ip
+# Rebooted and still server detecting ip
