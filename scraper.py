@@ -77,5 +77,5 @@ def print_problems_solved(link):
         print("\n")
 
 if __name__ == "__main__":
-    getProblems("https://leetcode.com/u/sreeerode12/")
+    getProblems("https://leetcode.com/u/dpraveen18/")
 
