@@ -63,9 +63,8 @@ def getProblems(link):
         submission['difficulty'] = getDifficulty(submission['titleSlug'])
 
         if(dt.date() not in submissionByDate.keys()):
-            submissionByDate[dt.date()] = [submission]
-        else:
-            submissionByDate[dt.date()].append(submission)
+            submissionByDate[dt.date()] = {"Easy":0,"Medium":0,"Hard":0}
+        submissionByDate[dt.date()][submission['difficulty'].replace("\n","")]+=1
 
     return submissionByDate
 
@@ -80,7 +79,3 @@ def print_problems_solved(link):
 if __name__ == "__main__":
     getProblems("https://leetcode.com/u/sreeerode12/")
 
-
-# TODO change to leetcode graphql api and check ip block issue
-# Changed from wifi to mobile hotspot and yet detecting ip
-# Rebooted and still server detecting ip

@@ -7,22 +7,18 @@ OUTPUT_PATH = "./output.csv"
 
 def fetch_stats(date):
     df = pd.read_csv(CSV_PATH)
-
+    f= False
     print(df.columns)
 
     problems = []
 
     for index, row in df.iterrows():
-        if(row['Leetcode ID'] == 'VIGNESH R'):
-            break
         problems_byDate = Scraper.getProblems(row['Leetcode ID'])
-        if(date in problems_byDate):
-            problems.append(problems_byDate[date])
-        else:
-            problems.append([])
+        df2 = pd.DataFrame(problems_byDate)
+        problems.append(df2)
     df['Problems'] = problems
 
-    df.to_csv(OUTPUT_PATH)
+    df.to_csv(OUTPUT_PATH,index=False)
 
 
 if __name__ == "__main__":
