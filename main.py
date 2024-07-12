@@ -22,7 +22,8 @@ def fetch_stats(date):
             df2=pd.concat([df2,pivot_df],axis=0)
 
     res = pd.merge(df2, res, left_index=True, right_index=True)
-    res.to_csv(OUTPUT_PATH)   
+    # res.to_csv(OUTPUT_PATH)
+    print(res)   
     
 if __name__ == "__main__":
 

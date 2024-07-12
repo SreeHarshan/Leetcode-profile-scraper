@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime ,timedelta
 import requests
 import json
 import cache as cacheManager
@@ -77,5 +77,5 @@ def print_problems_solved(link):
         print("\n")
 
 if __name__ == "__main__":
-    getProblems("https://leetcode.com/u/dpraveen18/")
+    getProblems("https://leetcode.com/u/https://leetcode.com/venkatprabu007/")
 
