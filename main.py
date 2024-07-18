@@ -17,6 +17,7 @@ def fetch_stats(date):
         problems_by_date = Scraper.getProblems(row['Leetcode ID'])
         val = problems_by_date.get(date)
         stats.append(process_stats(val, row['Name'], date))
+        stats[-1].insert(0,'Roll No.',row['Roll No.'])
     
     df2 = pd.concat(stats, axis=0)
     if not os.path.isfile(OUTPUT_PATH):
@@ -39,8 +40,6 @@ def process_stats(val, name, date):
     return pivot_df
 
 if __name__ == "__main__":
-
-    import argparse
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-o", "--output", help = "Output File")
