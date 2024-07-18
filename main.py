@@ -52,11 +52,11 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit(1)
 
-    if args.Output:
-        OUTPUT_PATH = args.Output
+    if args.output:
+        OUTPUT_PATH = args.output
     
-    if args.Input:
-        DB_PATH = args.Input
+    if args.input:
+        DB_PATH = args.input
 
         if(not os.path.isfile(DB_PATH)):
             print("Invalid input")
