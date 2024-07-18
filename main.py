@@ -1,7 +1,7 @@
 import pandas as pd
 import scraper as Scraper
 from datetime import datetime, timedelta
-import os
+import os,sys,argparse
 
 DB_PATH = "./Student_db.csv"
 OUTPUT_PATH = "./leetcode_stats.csv"
@@ -38,7 +38,42 @@ def process_stats(val, name, date):
     pivot_df = pd.pivot_table(melted_df, columns=['date', 'level'], index='Name', values='count', aggfunc='sum')
     return pivot_df
 
+def print_help():
+    print("""============================
+===== Leetcode Scraper =====
+============================
+Usage:
+--input
+  The input csv 
+
+--output
+  The output csv""")
+
+
 if __name__ == "__main__":
+
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-o", "--output", help = "Output File")
+    parser.add_argument("-i", "--input", help = "Input File")
+    args = parser.parse_args()
+
+
+    if(len(sys.argv)<=1):
+        parser.print_help()
+        sys.exit(1)
+
+    if args.Output:
+        OUTPUT_PATH = args.Output
+    
+    if args.Input:
+        DB_PATH = args.Input
+
+        if(not os.path.isfile(DB_PATH)):
+            print("Invalid input")
+            sys.exit(1)
+
     date = datetime.now().date()
     print("Fetching for date:", date)
     fetch_stats(date)
