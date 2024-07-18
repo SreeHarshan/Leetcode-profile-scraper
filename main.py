@@ -38,18 +38,6 @@ def process_stats(val, name, date):
     pivot_df = pd.pivot_table(melted_df, columns=['date', 'level'], index='Name', values='count', aggfunc='sum')
     return pivot_df
 
-def print_help():
-    print("""============================
-===== Leetcode Scraper =====
-============================
-Usage:
---input
-  The input csv 
-
---output
-  The output csv""")
-
-
 if __name__ == "__main__":
 
     import argparse
