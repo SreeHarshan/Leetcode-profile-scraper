@@ -76,7 +76,4 @@ if __name__ == "__main__":
         open(CACHE, 'w').close()
     
     # Fetch and process the stats
-    fetch_stats((datetime.now()-timedelta(days=2)).date())
-    fetch_stats((datetime.now()-timedelta(days=1)).date())
-    fetch_stats(date)
     fetch_stats(date)
