@@ -23,12 +23,12 @@ def fetch_stats(date):
     for index, row in df.iterrows():
         problems_by_date = Scraper.getProblems(row['Leetcode ID'])
         val = problems_by_date.get(date)
-        stats.append(process_stats(val, row['Name'], row['Roll No.']))
-
-    # Concatenate all student stats into a single DataFrame
-    df2 = pd.concat({date: pd.concat(stats, axis=0)}, axis=1, names=['Date', 'Difficulty'])
-
-    if os.path.isfile(OUTPUT_PATH):
+        stats.append(process_stats(val, row['Name'], date))
+    
+    df2 = pd.concat(stats, axis=0)
+    if not os.path.isfile(OUTPUT_PATH):
+        df2.to_csv(OUTPUT_PATH)
+    else:
         df1 = pd.read_csv(OUTPUT_PATH, header=[0, 1], index_col=[0])
 
         # Remove existing date column if it exists
@@ -43,6 +43,9 @@ def fetch_stats(date):
 
 # Main function to parse arguments and execute the script
 if __name__ == "__main__":
+
+    import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-o", "--output", help="Output File")
     parser.add_argument("-i", "--input", help="Input File")
