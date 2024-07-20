@@ -9,42 +9,35 @@ OUTPUT_PATH = "./leetcode_stats.csv"
 CACHE = "./cache.txt"
 
 # Function to process the statistics
-def process_stats(val, name, date):
-    if val:
-        # Create a DataFrame with the provided stats
-        df = pd.DataFrame(val, index=[name])
-        df.columns = pd.MultiIndex.from_product([[date], df.columns])
-    else:
-        # Create a DataFrame with default values if no stats are provided
-        df = pd.DataFrame({(date, 'Easy'): 0, (date, 'Medium'): 0, (date, 'Hard'): 0}, index=[name])
-    return df
+def process_stats(val, name, rollno):
+    if not val:
+        val = {'Easy': 0, 'Medium': 0, 'Hard': 0}
+    return pd.DataFrame(val, index=[f"{rollno}-{name}"])
 
 # Function to fetch statistics
 def fetch_stats(date):
     df = pd.read_csv(DB_PATH)
-    
-    # Ensure the cache file exists
-    if not os.path.isfile(CACHE):
-        with open(CACHE, 'w') as op:
-            pass
-
     stats = []
-    # Iterate through each student in the database
+
+    # Process the stats for each student
     for index, row in df.iterrows():
         problems_by_date = Scraper.getProblems(row['Leetcode ID'])
         val = problems_by_date.get(date)
-        # Process the stats for each student
-        stats.append(process_stats(val, row['Name'], date))
-    
-    # Concatenate all student stats into a single DataFrame
-    df2 = pd.concat(stats, axis=0)
+        stats.append(process_stats(val, row['Name'], row['Roll No.']))
 
-    # If the output file exists, read it and concatenate with the new stats
+    # Concatenate all student stats into a single DataFrame
+    df2 = pd.concat({date: pd.concat(stats, axis=0)}, axis=1, names=['Date', 'Difficulty'])
+
     if os.path.isfile(OUTPUT_PATH):
-        existing_df = pd.read_csv(OUTPUT_PATH, header=[0, 1], index_col=0)
-        df2 = pd.concat([df2, existing_df], axis=1)
-    
-    # Save the updated stats to the output file
+        df1 = pd.read_csv(OUTPUT_PATH, header=[0, 1], index_col=[0])
+
+        # Remove existing date column if it exists
+        if str(date) in df1.columns.get_level_values(0):
+            df1 = df1.drop(columns=[str(date)], level=0)
+
+        # Merge with existing data
+        df2 = df2.merge(df1, left_index=True, right_index=True, how='outer')
+
     df2.to_csv(OUTPUT_PATH)
     print(df2)
 
@@ -80,4 +73,7 @@ if __name__ == "__main__":
         open(CACHE, 'w').close()
     
     # Fetch and process the stats
+    fetch_stats((datetime.now()-timedelta(days=2)).date())
+    fetch_stats((datetime.now()-timedelta(days=1)).date())
+    fetch_stats(date)
     fetch_stats(date)
