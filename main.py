@@ -8,6 +8,7 @@ DB_PATH = "./Student_db.csv"
 OUTPUT_PATH = "./leetcode_stats.csv"
 CACHE = "./cache.txt"
 
+
 # Function to process the statistics
 def process_stats(val, name, rollno):
     if not val:
@@ -23,18 +24,17 @@ def fetch_stats(date):
     for index, row in df.iterrows():
         problems_by_date = Scraper.getProblems(row['Leetcode ID'])
         val = problems_by_date.get(date)
-        stats.append(process_stats(val, row['Name'], date))
-    
-    df2 = pd.concat(stats, axis=0)
-    if not os.path.isfile(OUTPUT_PATH):
-        df2.to_csv(OUTPUT_PATH)
-    else:
+        stats.append(process_stats(val, row['Name'], row['Roll No.']))
+
+    # Concatenate all student stats into a single DataFrame
+    df2 = pd.concat({date: pd.concat(stats, axis=0)}, axis=1, names=['Date', 'Difficulty'])
+
+    if os.path.isfile(OUTPUT_PATH):
         df1 = pd.read_csv(OUTPUT_PATH, header=[0, 1], index_col=[0])
 
         # Remove existing date column if it exists
         if str(date) in df1.columns.get_level_values(0):
             df1 = df1.drop(columns=[str(date)], level=0)
-
         # Merge with existing data
         df2 = df2.merge(df1, left_index=True, right_index=True, how='outer')
 
